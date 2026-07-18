@@ -1,0 +1,30 @@
+// types/sample.ts
+export type StringOrNumber = string | number;
+
+export interface User {
+    id: number;
+    name: string;
+    email: string;
+    role: "student" | "admin" | "instructor";
+    isActive: boolean;
+}
+
+export interface Course {
+    code: string;
+    title: string;
+    units: number;
+    semester: string;
+}
+
+export interface Submission {
+    id: number;
+    studentId: number;
+    courseCode: string;
+    repoUrl: string;
+    submittedAt: Date;
+    score?: number;
+}
+
+export interface Student extends User {
+    score?: number;
+}

@@ -28,4 +28,3 @@ const user = getUser(1);
 console.log(user);
 console.log(calculateGrade(85, 100));
 console.log(formatCourse("IT Elective 4", 3, "1st Semester"));
-
