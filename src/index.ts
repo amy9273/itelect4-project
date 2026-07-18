@@ -9,12 +9,12 @@ import type {
     PetPreview,
     PublicUser,
     RoleCount,
-} from "../types/index";
+} from "./types/index";
 
 import {
     AppointmentStatus,
     Role,
-} from "../types/index";
+} from "./types/index"; 
 
 // ===== PRIMITIVE & SPECIAL TYPES =====
 const projectName: string = "vet-appointment-system";
