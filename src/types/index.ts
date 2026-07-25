@@ -51,13 +51,17 @@ export type PublicUser = Omit<User, "email" | "isActive">;
 // Record<K, T> -- dashboard-style counts
 export type RoleCount = Record<"vet" | "admin" | "receptionist", number>;
 
-// ===== ENUMS =====
 // Regular enum -- exists at runtime, supports reverse mapping
-export enum AppointmentStatus {
-    Scheduled,
-    Completed,
-    Cancelled,
-}
+// ===== ENUMS (Vite-Safe & String-Based) =====
+
+export const AppointmentStatus = {
+    Scheduled: "Scheduled",
+    Completed: "Completed",
+    Cancelled: "Cancelled",
+} as const;
+
+// This creates a type that is strictly "Scheduled" | "Completed" | "Cancelled"
+export type AppointmentStatus = typeof AppointmentStatus[keyof typeof AppointmentStatus];
 
 // const enum -- inlined at compile time, zero runtime overhead
 export const enum Role {
