@@ -13,11 +13,11 @@ function VetCard({ vet, onSelect }: VetCardProps) {
     };
 
     return (
-        <div className="vet-card" style={{ border: "1px solid #ccc", padding: "1rem", borderRadius: "8px", marginBottom: "1rem" }}>
+        <div>
             <h3>{vet.name}</h3>
             <p>Email: {vet.email}</p>
             <p>Role: {vet.role}</p>
-            <button onClick={handleSelect} style={{ marginTop: "0.5rem", padding: "0.5rem" }}>
+            <button onClick={handleSelect}>
                 Select Vet
             </button>
         </div>

@@ -14,7 +14,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment, children
     };
 
     return (
-        <div className="appointment-card" style={{ border: "1px solid #ccc", padding: "1rem", borderRadius: "8px", marginBottom: "1rem" }}>
+        <div>
             <h3>Appointment #{appointment.id}</h3>
             <p>Pet ID: {appointment.petId} | Vet ID: {appointment.vetId}</p>
             <p>Scheduled: {appointment.scheduledAt.toLocaleDateString()}</p>
@@ -22,7 +22,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment, children
             {appointment.notes && <p>Notes: {appointment.notes}</p>}
             
             {/* Renders any children passed inside the component tags */}
-            {children && <div style={{ marginTop: "0.5rem", fontStyle: "italic", color: "blue" }}>{children}</div>}
+            {children && <div>{children}</div>}
         </div>
     );
 };

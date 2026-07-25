@@ -38,7 +38,7 @@ function App() {
     };
 
     return (
-        <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
+        <div>
             <h1>Vet Appointment System Dashboard</h1>
             
             <VetCard vet={mockVet} onSelect={handleVetSelect} />

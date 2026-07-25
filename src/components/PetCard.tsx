@@ -6,7 +6,7 @@ interface PetCardProps {
 
 function PetCard({ pet }: PetCardProps) {
     return (
-        <div className="pet-card" style={{ border: "1px solid #ccc", padding: "1rem", borderRadius: "8px", marginBottom: "1rem" }}>
+        <div>
             <h3>{pet.name}</h3>
             <p>Species: {pet.species}</p>
             <p>Breed: {pet.breed}</p>
