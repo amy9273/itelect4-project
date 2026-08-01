@@ -35,6 +35,7 @@ logMessage(greet(projectName, currentYear));
 let anything: any = "hello";
 anything = 42;
 anything = true;
+console.log(anything);
 
 let userInput: unknown = "test";
 if (typeof userInput === "string") {
@@ -44,6 +45,13 @@ if (typeof userInput === "string") {
 function throwError(message: string): never {
     throw new Error(message);
 }
+// reference throwError to avoid unused warning
+if (false as boolean) {
+    throwError("Will not happen");
+}
+
+const testApt: Appointment | null = null;
+console.log(testApt, isFullStack, nothing, noSet);
 
 // ===== USING INTERFACES =====
 const vetUser: User = {
@@ -114,7 +122,7 @@ const petResponse: ApiResponse<Pet[]> = {
     data: [pet],
 };
 
-console.log(userResponse.data.name);
+console.log(userResponse.data.name, petResponse);
 
 // ===== USING UTILITY TYPES =====
 const patch: UserUpdate = {

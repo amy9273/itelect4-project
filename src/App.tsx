@@ -50,20 +50,22 @@ const mockAppointments: Appointment[] = [
 
 // ===== MAIN APP COMPONENT =====
 function App() {
-    // 1. TYPED STATE (Requirement: at least 2 pieces of state)
+    // 1. TYPED STATE
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isError, setIsError] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [selectedVet, setSelectedVet] = useState<User | null>(null);
 
-    // 2. TYPED DOM REFERENCE (Requirement: one typed DOM reference)
+    // 2. TYPED DOM REFERENCE
     const searchInputRef = useRef<HTMLInputElement>(null);
 
-    // 3. CUSTOM HOOKS (Requirement: 2 custom hooks)
+    // 3. CUSTOM HOOKS
     const [showDetails, toggleDetails] = useToggle(false);
+    const [isDarkMode, toggleDarkMode] = useToggle(false);
     const previousSearch = usePrevious(searchTerm);
 
-    // 4. USE EFFECT (Requirement: load mock data on mount)
+    // 4. USE EFFECT (load mock data on mount)
     useEffect(() => {
         // Simulate a 500ms API fetch delay
         const timer = setTimeout(() => {
@@ -78,7 +80,7 @@ function App() {
         return () => clearTimeout(timer);
     }, []);
 
-    // 5. TYPED DOM EVENT HANDLER (Requirement: typed onChange)
+    // 5. TYPED DOM EVENT HANDLER
     const handleSearchChange = (
         e: React.ChangeEvent<HTMLInputElement>
     ): void => {
@@ -88,65 +90,141 @@ function App() {
     // Derived state: Filter appointments based on search term
     const filteredAppointments = appointments.filter((apt) => {
         const notesText = apt.notes?.toLowerCase() || "";
-        // .toString() prevents TS errors if your status is a numeric enum
-        const statusText = apt.status.toString().toLowerCase(); 
+        const statusText = apt.status.toLowerCase(); 
         return notesText.includes(searchTerm.toLowerCase()) || 
                statusText.includes(searchTerm.toLowerCase());
     });
 
     // Early return for loading state
     if (isLoading) {
-        return <p style={{ padding: "2rem", textAlign: "center" }}>Loading clinic data...</p>;
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+                <div className="animate-pulse p-6 text-gray-500 dark:text-gray-400 font-semibold text-lg">
+                    Loading clinic data...
+                </div>
+            </div>
+        );
+    }
+
+    // Early return for error state
+    if (isError) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+                <div className="m-6 max-w-md w-full rounded-lg bg-red-50 dark:bg-red-950/30 p-4 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-400 text-center shadow-md">
+                    <p className="font-semibold mb-2">Error Occurred</p>
+                    <p className="text-sm">Could not load clinic data. Please try refreshing the page.</p>
+                </div>
+            </div>
+        );
     }
 
     // ===== DYNAMIC UI RENDERING =====
     return (
-        <div style={{ padding: "2rem", fontFamily: "sans-serif", maxWidth: "800px", margin: "0 auto" }}>
-            <h1>Vet Appointment Dashboard</h1>
+        <div className={isDarkMode ? "dark" : ""}>
+            <div className="min-h-screen bg-gray-50 p-6 dark:bg-gray-900 text-gray-850 transition-colors duration-200">
+                <div className="max-w-6xl mx-auto">
+                    {/* Header Controls */}
+                    <div className="flex justify-between items-center mb-6">
+                        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">
+                            Vet Appointment Dashboard
+                        </h1>
+                        <div className="flex gap-2">
+                            <button 
+                                onClick={toggleDarkMode} 
+                                className="rounded bg-gray-800 px-3 py-1.5 text-sm text-white dark:bg-gray-200 dark:text-gray-900 transition-colors hover:bg-gray-700 dark:hover:bg-gray-100 font-medium"
+                            >
+                                {isDarkMode ? "Light Mode" : "Dark Mode"}
+                            </button>
+                            <button 
+                                onClick={() => setIsError(true)} 
+                                className="rounded bg-red-100 dark:bg-red-950/50 px-3 py-1.5 text-sm text-red-700 dark:text-red-400 transition-colors hover:bg-red-200 dark:hover:bg-red-900/50 font-medium"
+                            >
+                                Simulate Error
+                            </button>
+                        </div>
+                    </div>
 
-            {/* Search Input with Ref and Typed Event */}
-            <input
-                ref={searchInputRef}
-                type="text"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                placeholder="Search appointments by notes or status..."
-                style={{ width: "100%", padding: "0.5rem", marginBottom: "1rem" }}
-            />
-            
-            {/* Show previous search term using custom hook */}
-            {previousSearch !== undefined && previousSearch !== searchTerm && (
-                <p style={{ color: "gray", fontSize: "0.9rem" }}>
-                    Previous search: "{previousSearch}"
-                </p>
-            )}
+                    {/* Search Input with Ref and Typed Event */}
+                    <div className="mb-6">
+                        <input
+                            ref={searchInputRef}
+                            type="text"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            placeholder="Search appointments by notes or status..."
+                            className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 text-gray-950 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        
+                        {/* Show previous search term using custom hook */}
+                        {previousSearch !== undefined && previousSearch !== searchTerm && (
+                            <p className="text-gray-500 dark:text-gray-400 text-xs mt-1.5 italic">
+                                Previous search: "{previousSearch}"
+                            </p>
+                        )}
+                    </div>
 
-            {/* Vet Card with Callback Prop */}
-            <VetCard vet={mockVet} onSelect={setSelectedVet} />
-            {selectedVet && <p style={{ color: "green" }}>Selected Vet: {selectedVet.name}</p>}
+                    {/* Main Content Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        {/* Column 1: Vet Card & Details */}
+                        <div className="space-y-4">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Vet Information</h2>
+                            <VetCard vet={mockVet} onSelect={setSelectedVet} />
+                            {selectedVet && (
+                                <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/50 text-green-800 dark:text-green-300 rounded-lg text-sm font-medium">
+                                    Selected Vet: {selectedVet.name}
+                                </div>
+                            )}
+                        </div>
 
-            {/* Toggle Button using custom hook */}
-            <button 
-                onClick={toggleDetails} 
-                style={{ marginBottom: "1rem", padding: "0.5rem 1rem", cursor: "pointer" }}
-            >
-                {showDetails ? "Hide" : "Show"} Pet Details
-            </button>
+                        {/* Column 2: Pet Details Toggle */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Pet Details</h2>
+                                <button 
+                                    onClick={toggleDetails} 
+                                    className="px-3 py-1.5 bg-blue-100 hover:bg-blue-200 dark:bg-blue-950/40 dark:hover:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded text-sm font-semibold transition-colors"
+                                >
+                                    {showDetails ? "Hide" : "Show"}
+                                </button>
+                            </div>
+                            
+                            {showDetails ? (
+                                <div className="space-y-4">
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 italic">Showing default and compact variants:</p>
+                                    {/* Default Variant */}
+                                    <PetCard pet={mockPet} variant="default" />
+                                    {/* Compact Variant */}
+                                    <PetCard pet={mockPet} variant="compact" />
+                                </div>
+                            ) : (
+                                <div className="p-5 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg text-center text-gray-500 dark:text-gray-400 text-sm">
+                                    Click Show to load pet cards.
+                                </div>
+                            )}
+                        </div>
 
-            {/* Conditionally render Pet Card using custom hook state */}
-            {showDetails && <PetCard pet={mockPet} />}
-
-            {/* Render Filtered Appointments (Requirement: dynamic rendering, not hard-coded) */}
-            <h2>Appointments ({filteredAppointments.length})</h2>
-            {filteredAppointments.length === 0 ? (
-                <p>No appointments found.</p>
-            ) : (
-                filteredAppointments.map((apt) => (
-                    <AppointmentCard key={apt.id} appointment={apt}>
-                        <p>Reminder: Please arrive 15 minutes early.</p>
-                    </AppointmentCard>
-                ))
-            )}
+                        {/* Column 3: Appointments List */}
+                        <div className="md:col-span-1 space-y-4">
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                                Appointments ({filteredAppointments.length})
+                            </h2>
+                            {filteredAppointments.length === 0 ? (
+                                <div className="p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-center text-gray-500 dark:text-gray-400 text-sm">
+                                    No appointments found.
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {filteredAppointments.map((apt) => (
+                                        <AppointmentCard key={apt.id} appointment={apt}>
+                                            <p className="font-semibold">Reminder: Please arrive 15 minutes early.</p>
+                                        </AppointmentCard>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
