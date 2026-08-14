@@ -25,8 +25,11 @@ function Layout() {
                         <NavLink to="/" end className={linkClass}>
                             Dashboard
                         </NavLink>
+                        <NavLink to="/vets" className={linkClass}>
+                            Our Vets
+                        </NavLink>
                         <NavLink to="/pets" className={linkClass}>
-                            Pets
+                            My Pets
                         </NavLink>
                         <NavLink to="/appointments" className={linkClass}>
                             Appointments
