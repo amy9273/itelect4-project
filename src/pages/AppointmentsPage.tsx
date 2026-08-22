@@ -1,42 +1,53 @@
-import { useState, useEffect, useRef } from "react";
-import type { Appointment } from "../types/index";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { ApiAppointment } from "../types/index";
+import { AppointmentStatus } from "../types/index";
 import AppointmentCard from "../components/AppointmentCard";
 import usePrevious from "../hooks/usePrevious";
-import { mockAppointments } from "../data/mockData";
+import useUiStore from "../store/uiStore";
+import { fetchAppointments, createAppointment } from "../api/client";
 
 function AppointmentsPage() {
-    const [appointments, setAppointments] = useState<Appointment[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [isError, setIsError] = useState<boolean>(false);
-    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [petId, setPetId] = useState<string>("101");
+    const [vetId, setVetId] = useState<string>("1");
+    const [notes, setNotes] = useState<string>("");
 
-    const searchInputRef = useRef<HTMLInputElement>(null);
+    const searchTerm = useUiStore((state) => state.searchTerm);
+    const setSearchTerm = useUiStore((state) => state.setSearchTerm);
     const previousSearch = usePrevious(searchTerm);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setAppointments(mockAppointments);
-            setIsLoading(false);
-            searchInputRef.current?.focus();
-        }, 500);
+    const queryClient = useQueryClient();
 
-        return () => clearTimeout(timer);
-    }, []);
-
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        setSearchTerm(e.target.value);
-    };
-
-    const filteredAppointments = appointments.filter((apt) => {
-        const notesText = apt.notes?.toLowerCase() || "";
-        const statusText = apt.status.toLowerCase();
-        return (
-            notesText.includes(searchTerm.toLowerCase()) ||
-            statusText.includes(searchTerm.toLowerCase())
-        );
+    // 1. READ -- useQuery hook fetching real appointments from json-server
+    const { data: appointments, isPending, isError, error } = useQuery<ApiAppointment[]>({
+        queryKey: ["appointments"],
+        queryFn: fetchAppointments,
     });
 
-    if (isLoading) {
+    // 2. WRITE -- useMutation hook that POSTs to json-server and invalidates query on success
+    const addAppointmentMutation = useMutation({
+        mutationFn: createAppointment,
+        onSuccess: () => {
+            // Invalidate the cache to trigger a background refetch
+            queryClient.invalidateQueries({ queryKey: ["appointments"] });
+            setNotes("");
+        },
+    });
+
+    const handleAddAppointment = (e: React.FormEvent): void => {
+        e.preventDefault();
+        if (!petId || !vetId) return;
+
+        addAppointmentMutation.mutate({
+            petId: parseInt(petId, 10),
+            vetId: parseInt(vetId, 10),
+            scheduledAt: new Date().toISOString(),
+            notes: notes.trim() || undefined,
+            status: AppointmentStatus.Scheduled,
+        });
+    };
+
+    if (isPending) {
         return (
             <div className="flex items-center justify-center p-12">
                 <div className="animate-pulse text-gray-500 dark:text-gray-400 font-semibold text-lg">
@@ -49,17 +60,20 @@ function AppointmentsPage() {
     if (isError) {
         return (
             <div className="max-w-md mx-auto rounded-lg bg-red-50 dark:bg-red-950/30 p-6 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-400 text-center shadow-md">
-                <p className="font-bold text-lg mb-2">Simulated Error State</p>
-                <p className="text-sm mb-4">Could not load appointments. Please reset the state.</p>
-                <button
-                    onClick={() => setIsError(false)}
-                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded text-sm transition-colors"
-                >
-                    Reset Error State
-                </button>
+                <p className="font-bold text-lg mb-2">Error Loading Appointments</p>
+                <p className="text-sm mb-4">{error.message} -- is json-server running on port 3001?</p>
             </div>
         );
     }
+
+    const filteredAppointments = appointments.filter((apt) => {
+        const notesText = apt.notes?.toLowerCase() || "";
+        const statusText = apt.status.toLowerCase();
+        return (
+            notesText.includes(searchTerm.toLowerCase()) ||
+            statusText.includes(searchTerm.toLowerCase())
+        );
+    });
 
     return (
         <div className="space-y-6">
@@ -67,20 +81,74 @@ function AppointmentsPage() {
                 <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
                     Scheduled Appointments
                 </h2>
-                <button
-                    onClick={() => setIsError(true)}
-                    className="rounded bg-red-100 dark:bg-red-950/50 px-3 py-1.5 text-sm text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900 transition-colors font-semibold"
-                >
-                    Simulate Error
-                </button>
+            </div>
+
+            {/* Appointment Booking Form (triggers useMutation) */}
+            <div className="p-5 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 rounded-xl shadow-sm space-y-4">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                    Book New Appointment
+                </h3>
+                <form onSubmit={handleAddAppointment} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
+                            Pet ID
+                        </label>
+                        <input
+                            type="number"
+                            value={petId}
+                            onChange={(e) => setPetId(e.target.value)}
+                            placeholder="e.g. 101"
+                            className="w-full rounded-lg border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 text-sm text-gray-900 dark:text-white"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
+                            Vet ID
+                        </label>
+                        <input
+                            type="number"
+                            value={vetId}
+                            onChange={(e) => setVetId(e.target.value)}
+                            placeholder="e.g. 1"
+                            className="w-full rounded-lg border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 text-sm text-gray-900 dark:text-white"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
+                            Appointment Notes
+                        </label>
+                        <input
+                            type="text"
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            placeholder="e.g. General checkup..."
+                            className="w-full rounded-lg border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 text-sm text-gray-900 dark:text-white"
+                        />
+                    </div>
+                    <div className="sm:col-span-3 flex justify-end">
+                        <button
+                            type="submit"
+                            disabled={addAppointmentMutation.isPending}
+                            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:bg-gray-400 shadow-sm"
+                        >
+                            {addAppointmentMutation.isPending ? "Scheduling..." : "Schedule Appointment"}
+                        </button>
+                    </div>
+                </form>
+                {addAppointmentMutation.isError && (
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                        {addAppointmentMutation.error.message}
+                    </p>
+                )}
             </div>
 
             <div className="space-y-2">
                 <input
-                    ref={searchInputRef}
                     type="text"
                     value={searchTerm}
-                    onChange={handleSearchChange}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search appointments by notes or status (Scheduled, Completed, Cancelled)..."
                     className="w-full rounded-lg border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-950 p-3 text-gray-950 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />

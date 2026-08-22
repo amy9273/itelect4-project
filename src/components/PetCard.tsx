@@ -1,7 +1,7 @@
-import type { Pet } from "../types/index";
+import type { Pet, ApiPet } from "../types/index";
 
 interface PetCardProps {
-    pet: Pet;
+    pet: Pet | ApiPet;
     variant?: "default" | "compact";
 }
 

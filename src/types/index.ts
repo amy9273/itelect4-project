@@ -69,3 +69,21 @@ export const enum Role {
     Admin = "admin",
     Receptionist = "receptionist",
 }
+
+// ===== API TYPES (DTOs) =====
+// JSON has no Date and json-server uses string IDs.
+// Both types below are DERIVED from existing models using Omit.
+export type ApiAppointment = Omit<Appointment, "id" | "scheduledAt"> & {
+    id: string;
+    scheduledAt: string; // ISO string over the wire
+};
+
+export type NewAppointment = Omit<ApiAppointment, "id">;
+
+export type ApiVet = Omit<User, "id"> & {
+    id: string;
+};
+
+export type ApiPet = Omit<Pet, "id"> & {
+    id: string;
+};

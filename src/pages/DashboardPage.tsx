@@ -1,10 +1,10 @@
 import { useState } from "react";
-import type { User } from "../types/index";
+import type { User, ApiVet } from "../types/index";
 import VetCard from "../components/VetCard";
 import { mockVet } from "../data/mockData";
 
 function DashboardPage() {
-    const [selectedVet, setSelectedVet] = useState<User | null>(null);
+    const [selectedVet, setSelectedVet] = useState<User | ApiVet | null>(null);
 
     return (
         <div className="space-y-6">

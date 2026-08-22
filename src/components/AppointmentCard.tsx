@@ -1,10 +1,10 @@
 import React from "react";
-import type { Appointment } from "../types/index";
+import type { Appointment, ApiAppointment } from "../types/index";
 import { AppointmentStatus } from "../types/index";
 import SubmissionBadge from "./SubmissionBadge";
 
 interface AppointmentCardProps {
-    appointment: Appointment;
+    appointment: Appointment | ApiAppointment;
     children?: React.ReactNode; // Allows wrapping content
 }
 
@@ -39,7 +39,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ appointment, children
                     Pet ID: <span className="font-semibold text-gray-800 dark:text-gray-100">{appointment.petId}</span> | Vet ID: <span className="font-semibold text-gray-800 dark:text-gray-100">{appointment.vetId}</span>
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                    Scheduled: <span className="font-medium text-gray-800 dark:text-gray-100">{appointment.scheduledAt.toLocaleDateString()}</span>
+                    Scheduled: <span className="font-medium text-gray-800 dark:text-gray-100">{new Date(appointment.scheduledAt).toLocaleDateString()}</span>
                 </p>
                 {appointment.notes && (
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 bg-gray-50 dark:bg-gray-700/50 p-2 rounded italic">

@@ -1,8 +1,8 @@
-import type { User } from "../types/index";
+import type { User, ApiVet } from "../types/index";
 
 interface VetCardProps {
-    vet: User;
-    onSelect: (vet: User) => void;
+    vet: User | ApiVet;
+    onSelect: (vet: User | ApiVet) => void;
 }
 
 function VetCard({ vet, onSelect }: VetCardProps) {

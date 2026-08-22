@@ -1,20 +1,34 @@
 import { useParams, useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 import PetCard from "../components/PetCard";
-import { allPets } from "../data/mockData";
+import type { ApiPet } from "../types/index";
+import { fetchPetById } from "../api/client";
 
 function PetDetailPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
-    // Look up the pet by numeric ID
-    const petId = id ? parseInt(id, 10) : NaN;
-    const pet = allPets.find((p) => p.id === petId);
+    const { data: pet, isPending, isError, error } = useQuery<ApiPet>({
+        queryKey: ["pets", id],
+        queryFn: () => fetchPetById(id!),
+        enabled: id !== undefined,
+    });
 
-    if (!pet || isNaN(petId)) {
+    if (isPending) {
+        return (
+            <div className="flex items-center justify-center p-12">
+                <div className="animate-pulse text-gray-500 dark:text-gray-400 font-semibold text-lg">
+                    Loading pet details...
+                </div>
+            </div>
+        );
+    }
+
+    if (isError || !pet) {
         return (
             <div className="max-w-md mx-auto mt-8 p-6 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-lg text-center text-red-700 dark:text-red-400 shadow-md">
                 <h3 className="text-xl font-bold mb-2">Pet Not Found</h3>
-                <p className="text-sm mb-4">No pet found with ID "{id}".</p>
+                <p className="text-sm mb-4">{error?.message || `No pet found with ID "${id}".`}</p>
                 <button
                     onClick={() => navigate("/pets")}
                     className="px-4 py-2 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition-colors"

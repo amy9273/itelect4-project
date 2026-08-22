@@ -1,0 +1,91 @@
+{
+  "vets": [
+    {
+      "id": "1",
+      "name": "Dr. Juan dela Cruz",
+      "email": "juan.vet@example.com",
+      "role": "vet",
+      "isActive": true
+    },
+    {
+      "id": "2",
+      "name": "Dr. Maria Santos",
+      "email": "maria.vet@example.com",
+      "role": "vet",
+      "isActive": true
+    }
+  ],
+  "pets": [
+    {
+      "id": "101",
+      "name": "Buddy",
+      "species": "Dog",
+      "breed": "Golden Retriever",
+      "ownerId": 5
+    },
+    {
+      "id": "102",
+      "name": "Max",
+      "species": "Dog",
+      "breed": "German Shepherd",
+      "ownerId": 6
+    },
+    {
+      "id": "103",
+      "name": "Bella",
+      "species": "Cat",
+      "breed": "Siamese",
+      "ownerId": 7
+    },
+    {
+      "id": "104",
+      "name": "Luna",
+      "species": "Cat",
+      "breed": "Persian",
+      "ownerId": 8
+    }
+  ],
+  "appointments": [
+    {
+      "id": "1",
+      "petId": 101,
+      "vetId": 1,
+      "scheduledAt": "2026-07-25T10:00:00.000Z",
+      "notes": "Annual checkup and vaccinations",
+      "status": "Scheduled"
+    },
+    {
+      "id": "2",
+      "petId": 102,
+      "vetId": 1,
+      "scheduledAt": "2026-07-25T11:30:00.000Z",
+      "notes": "Nail trimming",
+      "status": "Completed"
+    },
+    {
+      "id": "3",
+      "petId": 103,
+      "vetId": 2,
+      "scheduledAt": "2026-08-01T09:00:00.000Z",
+      "notes": "Routine checkup",
+      "status": "Scheduled"
+    },
+    {
+      "id": "4",
+      "petId": 104,
+      "vetId": 2,
+      "scheduledAt": "2026-08-02T14:00:00.000Z",
+      "notes": "Ear cleaning",
+      "status": "Cancelled"
+    },
+    {
+      "petId": 101,
+      "vetId": 1,
+      "scheduledAt": "2026-08-21T17:01:48.871Z",
+      "notes": "Vaccination shot test",
+      "status": "Scheduled",
+      "id": "6-nTtFHi2EQ"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
