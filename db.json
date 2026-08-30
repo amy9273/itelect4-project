@@ -1,4 +1,34 @@
 {
+  "users": [
+    {
+      "id": "5",
+      "name": "Juan Dela Cruz (Owner)",
+      "email": "juan.owner@example.com",
+      "role": "owner",
+      "isActive": true
+    },
+    {
+      "id": "6",
+      "name": "Maria Clara",
+      "email": "maria.clara@example.com",
+      "role": "owner",
+      "isActive": true
+    },
+    {
+      "id": "7",
+      "name": "Crisostomo Ibarra",
+      "email": "ibarra@example.com",
+      "role": "owner",
+      "isActive": true
+    },
+    {
+      "id": "8",
+      "name": "Elias Santos",
+      "email": "elias@example.com",
+      "role": "owner",
+      "isActive": true
+    }
+  ],
   "vets": [
     {
       "id": "1",
@@ -43,6 +73,13 @@
       "species": "Cat",
       "breed": "Persian",
       "ownerId": 8
+    },
+    {
+      "id": "105",
+      "name": "Amaya",
+      "species": "Bird",
+      "breed": "Cockatiel",
+      "ownerId": 8
     }
   ],
   "appointments": [
@@ -50,14 +87,16 @@
       "id": "1",
       "petId": 101,
       "vetId": 1,
+      "type": "Routine Checkup",
       "scheduledAt": "2026-07-25T10:00:00.000Z",
       "notes": "Annual checkup and vaccinations",
-      "status": "Scheduled"
+      "status": "Cancelled"
     },
     {
       "id": "2",
       "petId": 102,
       "vetId": 1,
+      "type": "Grooming & Hygiene",
       "scheduledAt": "2026-07-25T11:30:00.000Z",
       "notes": "Nail trimming",
       "status": "Completed"
@@ -66,25 +105,80 @@
       "id": "3",
       "petId": 103,
       "vetId": 2,
+      "type": "Routine Checkup",
       "scheduledAt": "2026-08-01T09:00:00.000Z",
       "notes": "Routine checkup",
-      "status": "Scheduled"
+      "status": "Completed"
     },
     {
       "id": "4",
       "petId": 104,
       "vetId": 2,
+      "type": "Grooming & Hygiene",
       "scheduledAt": "2026-08-02T14:00:00.000Z",
       "notes": "Ear cleaning",
-      "status": "Cancelled"
+      "status": "Completed"
     },
     {
+      "id": "5",
       "petId": 101,
       "vetId": 1,
+      "type": "Vaccination & Shots",
       "scheduledAt": "2026-08-21T17:01:48.871Z",
       "notes": "Vaccination shot test",
-      "status": "Scheduled",
-      "id": "6-nTtFHi2EQ"
+      "status": "Completed"
+    },
+    {
+      "id": "6",
+      "petId": 101,
+      "vetId": 2,
+      "type": "Routine Checkup",
+      "scheduledAt": "2026-08-30T11:53:21.501Z",
+      "notes": "Routine checkup",
+      "status": "Completed"
+    },
+    {
+      "id": "7",
+      "petId": 105,
+      "vetId": 1,
+      "type": "Routine Checkup",
+      "scheduledAt": "2026-08-30T14:18:54.500Z",
+      "notes": "Routine checkup",
+      "status": "Completed"
+    },
+    {
+      "id": "8",
+      "petId": 105,
+      "vetId": 1,
+      "type": "Routine Checkup",
+      "scheduledAt": "2026-08-30T14:19:59.661Z",
+      "notes": "Routine checkup",
+      "status": "Completed"
+    },
+    {
+      "id": "9",
+      "petId": 105,
+      "vetId": 1,
+      "type": "Dental Cleaning",
+      "scheduledAt": "2026-08-30T14:28:40.671Z",
+      "notes": "Dental check and cleaning",
+      "status": "Completed"
+    },
+    {
+      "id": "10",
+      "petId": 101,
+      "vetId": 2,
+      "type": "Surgery Consultation",
+      "scheduledAt": "2026-08-30T14:36:31.099Z",
+      "status": "Completed"
+    },
+    {
+      "id": "11",
+      "petId": 101,
+      "vetId": 2,
+      "type": "Dental Cleaning",
+      "scheduledAt": "2026-08-30T14:38:04.299Z",
+      "status": "Completed"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

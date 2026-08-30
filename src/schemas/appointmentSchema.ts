@@ -1,6 +1,16 @@
 import { z } from "zod";
 import { AppointmentStatus } from "../types/index";
 
+export const APPOINTMENT_TYPES = [
+    "Routine Checkup",
+    "Vaccination & Shots",
+    "Surgery Consultation",
+    "Dental Cleaning",
+    "Emergency Care",
+    "Grooming & Hygiene",
+    "Other Services",
+] as const;
+
 export const appointmentSchema = z.object({
     petId: z
         .number({ message: "Pet ID must be a valid number." })
@@ -10,13 +20,14 @@ export const appointmentSchema = z.object({
         .number({ message: "Vet ID must be a valid number." })
         .int("Vet ID must be an integer.")
         .positive("Vet ID must be greater than 0."),
+    type: z
+        .string({ message: "Please select an appointment type." })
+        .min(1, "Appointment type is required."),
     notes: z
         .string()
-        .min(3, "Appointment notes must be at least 3 characters long.")
         .max(200, "Appointment notes cannot exceed 200 characters.")
-        .refine((val) => val.trim().length >= 3, {
-            message: "Notes cannot consist of whitespace only.",
-        }),
+        .optional()
+        .or(z.literal("")),
     status: z.enum(
         [
             AppointmentStatus.Scheduled,

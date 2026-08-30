@@ -6,6 +6,7 @@ function Layout() {
     const isDarkMode = useUiStore((state) => state.isDarkMode);
     const toggleDarkMode = useUiStore((state) => state.toggleDarkMode);
     const userName = useAuthStore((state) => state.userName);
+    const userRole = useAuthStore((state) => state.userRole);
     const logout = useAuthStore((state) => state.logout);
 
     const base = "rounded px-3 py-1.5 text-sm font-medium transition-colors duration-200";
@@ -29,11 +30,13 @@ function Layout() {
                         <NavLink to="/vets" className={linkClass}>
                             Our Vets
                         </NavLink>
-                        <NavLink to="/pets" className={linkClass}>
-                            My Pets
-                        </NavLink>
+                        {userRole === "owner" && (
+                            <NavLink to="/pets" className={linkClass}>
+                                My Pets
+                            </NavLink>
+                        )}
                         <NavLink to="/appointments" className={linkClass}>
-                            Appointments
+                            {userRole === "vet" ? "Doctor Appointments" : "Appointments"}
                         </NavLink>
                     </div>
 
@@ -44,8 +47,15 @@ function Layout() {
                             </NavLink>
                         ) : (
                             <div className="flex items-center gap-2">
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                                    userRole === "vet" 
+                                        ? "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300"
+                                        : "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300"
+                                }`}>
+                                    {userRole === "vet" ? "Doctor" : "Pet Owner"}
+                                </span>
                                 <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-                                    Hello, {userName}
+                                    {userName}
                                 </span>
                                 <button
                                     onClick={logout}

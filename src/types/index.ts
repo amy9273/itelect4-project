@@ -27,7 +27,8 @@ export interface Appointment {
     petId: number;
     vetId: number;
     scheduledAt: Date;
-    notes?: string; // optional field
+    type?: string; // appointment service type e.g. "Routine Checkup", "Vaccination", etc.
+    notes?: string; // optional notes field
     status: AppointmentStatus;
 }
 
@@ -86,4 +87,6 @@ export type ApiVet = Omit<User, "id"> & {
 
 export type ApiPet = Omit<Pet, "id"> & {
     id: string;
-};
+};
+
+export type NewPet = Omit<ApiPet, "id">;
