@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import useAuthStore from "../store/authStore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 function LoginPage() {
     const [name, setName] = useState<string>("");
@@ -16,38 +19,38 @@ function LoginPage() {
     };
 
     return (
-        <div className="max-w-md mx-auto mt-12 p-8 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 rounded-xl shadow-lg space-y-6">
+        <div className="max-w-md mx-auto mt-12 p-8 border border-border bg-card rounded-xl shadow-lg space-y-6">
             <div className="text-center space-y-2">
-                <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
+                <h2 className="text-3xl font-extrabold text-foreground">
                     Sign In
                 </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-muted-foreground">
                     Access clinic appointments and vet files
                 </p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">
+                <div className="grid gap-2">
+                    <Label htmlFor="username">
                         Username / Name
-                    </label>
-                    <input
+                    </Label>
+                    <Input
+                        id="username"
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Enter your name to login..."
-                        className="w-full rounded-lg border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-950 p-3 text-gray-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     />
                 </div>
 
-                <button
+                <Button
                     type="submit"
                     disabled={name.trim() === ""}
-                    className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-800 disabled:text-gray-500 shadow"
+                    className="w-full"
                 >
                     Login
-                </button>
+                </Button>
             </form>
         </div>
     );

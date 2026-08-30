@@ -1,22 +1,40 @@
-import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { ApiAppointment } from "../types/index";
 import { AppointmentStatus } from "../types/index";
+import { appointmentSchema, type AppointmentFormValues } from "../schemas/appointmentSchema";
 import AppointmentCard from "../components/AppointmentCard";
 import usePrevious from "../hooks/usePrevious";
 import useUiStore from "../store/uiStore";
 import { fetchAppointments, createAppointment } from "../api/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 function AppointmentsPage() {
-    const [petId, setPetId] = useState<string>("101");
-    const [vetId, setVetId] = useState<string>("1");
-    const [notes, setNotes] = useState<string>("");
-
     const searchTerm = useUiStore((state) => state.searchTerm);
     const setSearchTerm = useUiStore((state) => state.setSearchTerm);
     const previousSearch = usePrevious(searchTerm);
 
     const queryClient = useQueryClient();
+
+    // React Hook Form with Zod validation resolver
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<AppointmentFormValues>({
+        resolver: zodResolver(appointmentSchema),
+        mode: "onBlur",
+        defaultValues: {
+            petId: 101,
+            vetId: 1,
+            notes: "",
+            status: AppointmentStatus.Scheduled,
+        },
+    });
 
     // 1. READ -- useQuery hook fetching real appointments from json-server
     const { data: appointments, isPending, isError, error } = useQuery<ApiAppointment[]>({
@@ -30,27 +48,25 @@ function AppointmentsPage() {
         onSuccess: () => {
             // Invalidate the cache to trigger a background refetch
             queryClient.invalidateQueries({ queryKey: ["appointments"] });
-            setNotes("");
+            reset();
         },
     });
 
-    const handleAddAppointment = (e: React.FormEvent): void => {
-        e.preventDefault();
-        if (!petId || !vetId) return;
-
+    // Form submission handler executed only after validation passes
+    const onSubmit = (values: AppointmentFormValues): void => {
         addAppointmentMutation.mutate({
-            petId: parseInt(petId, 10),
-            vetId: parseInt(vetId, 10),
+            petId: values.petId,
+            vetId: values.vetId,
             scheduledAt: new Date().toISOString(),
-            notes: notes.trim() || undefined,
-            status: AppointmentStatus.Scheduled,
+            notes: values.notes.trim() || undefined,
+            status: values.status,
         });
     };
 
     if (isPending) {
         return (
             <div className="flex items-center justify-center p-12">
-                <div className="animate-pulse text-gray-500 dark:text-gray-400 font-semibold text-lg">
+                <div className="animate-pulse text-muted-foreground font-semibold text-lg">
                     Loading appointments...
                 </div>
             </div>
@@ -59,7 +75,7 @@ function AppointmentsPage() {
 
     if (isError) {
         return (
-            <div className="max-w-md mx-auto rounded-lg bg-red-50 dark:bg-red-950/30 p-6 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-400 text-center shadow-md">
+            <div className="max-w-md mx-auto rounded-lg bg-destructive/10 p-6 border border-destructive/30 text-destructive text-center shadow-md">
                 <p className="font-bold text-lg mb-2">Error Loading Appointments</p>
                 <p className="text-sm mb-4">{error.message} -- is json-server running on port 3001?</p>
             </div>
@@ -78,83 +94,118 @@ function AppointmentsPage() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
+                <h2 className="text-3xl font-extrabold text-foreground">
                     Scheduled Appointments
                 </h2>
             </div>
 
-            {/* Appointment Booking Form (triggers useMutation) */}
-            <div className="p-5 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 rounded-xl shadow-sm space-y-4">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            {/* Appointment Booking Form with React Hook Form + Zod + Shadcn */}
+            <div className="p-5 border border-border bg-card rounded-xl shadow-sm space-y-4">
+                <h3 className="text-lg font-bold text-foreground">
                     Book New Appointment
                 </h3>
-                <form onSubmit={handleAddAppointment} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
-                            Pet ID
-                        </label>
-                        <input
+                <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid gap-1.5">
+                        <Label htmlFor="petId">Pet ID</Label>
+                        <Input
+                            id="petId"
                             type="number"
-                            value={petId}
-                            onChange={(e) => setPetId(e.target.value)}
+                            {...register("petId", { valueAsNumber: true })}
+                            aria-invalid={errors.petId ? true : undefined}
                             placeholder="e.g. 101"
-                            className="w-full rounded-lg border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 text-sm text-gray-900 dark:text-white"
-                            required
                         />
+                        {errors.petId && (
+                            <p className="text-xs text-destructive font-medium">
+                                {errors.petId.message}
+                            </p>
+                        )}
                     </div>
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
-                            Vet ID
-                        </label>
-                        <input
+
+                    <div className="grid gap-1.5">
+                        <Label htmlFor="vetId">Vet ID</Label>
+                        <Input
+                            id="vetId"
                             type="number"
-                            value={vetId}
-                            onChange={(e) => setVetId(e.target.value)}
+                            {...register("vetId", { valueAsNumber: true })}
+                            aria-invalid={errors.vetId ? true : undefined}
                             placeholder="e.g. 1"
-                            className="w-full rounded-lg border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 text-sm text-gray-900 dark:text-white"
-                            required
                         />
+                        {errors.vetId && (
+                            <p className="text-xs text-destructive font-medium">
+                                {errors.vetId.message}
+                            </p>
+                        )}
                     </div>
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
-                            Appointment Notes
-                        </label>
-                        <input
+
+                    <div className="grid gap-1.5">
+                        <Label htmlFor="status">Status</Label>
+                        <select
+                            id="status"
+                            {...register("status")}
+                            aria-invalid={errors.status ? true : undefined}
+                            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        >
+                            <option value={AppointmentStatus.Scheduled} className="bg-background text-foreground">
+                                Scheduled
+                            </option>
+                            <option value={AppointmentStatus.Completed} className="bg-background text-foreground">
+                                Completed
+                            </option>
+                            <option value={AppointmentStatus.Cancelled} className="bg-background text-foreground">
+                                Cancelled
+                            </option>
+                        </select>
+                        {errors.status && (
+                            <p className="text-xs text-destructive font-medium">
+                                {errors.status.message}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="grid gap-1.5">
+                        <Label htmlFor="notes">Appointment Notes</Label>
+                        <Input
+                            id="notes"
                             type="text"
-                            value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
-                            placeholder="e.g. General checkup..."
-                            className="w-full rounded-lg border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 text-sm text-gray-900 dark:text-white"
+                            {...register("notes")}
+                            aria-invalid={errors.notes ? true : undefined}
+                            placeholder="e.g. Annual checkup..."
                         />
+                        {errors.notes && (
+                            <p className="text-xs text-destructive font-medium">
+                                {errors.notes.message}
+                            </p>
+                        )}
                     </div>
-                    <div className="sm:col-span-3 flex justify-end">
-                        <button
+
+                    <div className="sm:col-span-2 lg:col-span-4 flex justify-end">
+                        <Button
                             type="submit"
                             disabled={addAppointmentMutation.isPending}
-                            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:bg-gray-400 shadow-sm"
                         >
                             {addAppointmentMutation.isPending ? "Scheduling..." : "Schedule Appointment"}
-                        </button>
+                        </Button>
                     </div>
                 </form>
+
                 {addAppointmentMutation.isError && (
-                    <p className="text-sm text-red-600 dark:text-red-400">
+                    <p className="text-sm text-destructive">
                         {addAppointmentMutation.error.message}
                     </p>
                 )}
             </div>
 
             <div className="space-y-2">
-                <input
+                <Input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search appointments by notes or status (Scheduled, Completed, Cancelled)..."
-                    className="w-full rounded-lg border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-950 p-3 text-gray-950 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-card"
                 />
                 
                 {previousSearch !== undefined && previousSearch !== searchTerm && (
-                    <p className="text-gray-500 dark:text-gray-400 text-xs italic">
+                    <p className="text-muted-foreground text-xs italic">
                         Previous search: "{previousSearch}"
                     </p>
                 )}
@@ -162,7 +213,7 @@ function AppointmentsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {filteredAppointments.length === 0 ? (
-                    <div className="col-span-2 p-8 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 rounded-lg text-center text-gray-500 dark:text-gray-400">
+                    <div className="col-span-2 p-8 border border-border bg-card rounded-lg text-center text-muted-foreground">
                         No appointments found.
                     </div>
                 ) : (
