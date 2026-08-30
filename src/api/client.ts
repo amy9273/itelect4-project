@@ -1,4 +1,4 @@
-import type { ApiVet, ApiPet, ApiAppointment, NewAppointment } from "../types/index";
+import type { ApiVet, ApiPet, ApiAppointment, NewAppointment, NewPet } from "../types/index";
 
 export const API_URL = "http://localhost:3001";
 
@@ -38,6 +38,28 @@ export async function fetchPetById(id: string): Promise<ApiPet> {
     return res.json();
 }
 
+// POST /pets -> create new pet with sequential integer ID
+export async function createPet(newPet: NewPet): Promise<ApiPet> {
+    const currentPets = await fetchPets();
+    const numericIds = currentPets
+        .map((p) => Number(p.id))
+        .filter((id) => !isNaN(id));
+    const nextId = numericIds.length > 0 ? Math.max(...numericIds) + 1 : 101;
+
+    const res = await fetch(`${API_URL}/pets`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            ...newPet,
+            id: String(nextId),
+        }),
+    });
+    if (!res.ok) {
+        throw new Error("Could not register pet");
+    }
+    return res.json();
+}
+
 // GET /appointments -> whole list
 export async function fetchAppointments(): Promise<ApiAppointment[]> {
     const res = await fetch(`${API_URL}/appointments`);
@@ -47,17 +69,46 @@ export async function fetchAppointments(): Promise<ApiAppointment[]> {
     return res.json();
 }
 
-// POST /appointments -> create new appointment
+// POST /appointments -> create new appointment with sequential integer ID
 export async function createAppointment(
     newAppointment: NewAppointment
 ): Promise<ApiAppointment> {
+    const currentAppointments = await fetchAppointments();
+    const numericIds = currentAppointments
+        .map((a) => Number(a.id))
+        .filter((id) => !isNaN(id));
+    const nextId = numericIds.length > 0 ? Math.max(...numericIds) + 1 : 1;
+
     const res = await fetch(`${API_URL}/appointments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newAppointment),
+        body: JSON.stringify({
+            ...newAppointment,
+            id: String(nextId),
+        }),
     });
     if (!res.ok) {
         throw new Error("Could not schedule the appointment");
+    }
+    return res.json();
+}
+
+// PATCH /appointments/:id -> update appointment status or details
+export async function updateAppointmentStatus(
+    id: string,
+    status: string,
+    notes?: string
+): Promise<ApiAppointment> {
+    const payload: { status: string; notes?: string } = { status };
+    if (notes !== undefined) payload.notes = notes;
+
+    const res = await fetch(`${API_URL}/appointments/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+        throw new Error("Could not update appointment status");
     }
     return res.json();
 }
