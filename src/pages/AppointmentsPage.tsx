@@ -13,6 +13,7 @@ import { fetchAppointments, fetchVets, fetchPets, createAppointment, createPet, 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getErrorMessage } from "@/lib/utils";
 
 function AppointmentsPage() {
     const searchTerm = useUiStore((state) => state.searchTerm);
@@ -180,7 +181,7 @@ function AppointmentsPage() {
         return (
             <div className="max-w-md mx-auto rounded-lg bg-destructive/10 p-6 border border-destructive/30 text-destructive text-center shadow-md">
                 <p className="font-bold text-lg mb-2">Error Loading Appointments</p>
-                <p className="text-sm mb-4">{error.message} -- is json-server running on port 3001?</p>
+                <p className="text-sm mb-4">{getErrorMessage(error)} -- is json-server running on port 3001?</p>
             </div>
         );
     }
@@ -310,7 +311,7 @@ function AppointmentsPage() {
 
                     {addAppointmentMutation.isError && (
                         <p className="text-sm text-destructive">
-                            {addAppointmentMutation.error.message}
+                            {getErrorMessage(addAppointmentMutation.error)}
                         </p>
                     )}
                 </div>
