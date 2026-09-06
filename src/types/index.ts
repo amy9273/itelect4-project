@@ -8,7 +8,7 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    role: "vet" | "admin" | "receptionist";
+    role: "owner" | "vet" | "admin";
     isActive: boolean;
 }
 
@@ -50,7 +50,7 @@ export type PetPreview = Pick<Pet, "id" | "name" | "species">;
 export type PublicUser = Omit<User, "email" | "isActive">;
 
 // Record<K, T> -- dashboard-style counts
-export type RoleCount = Record<"vet" | "admin" | "receptionist", number>;
+export type RoleCount = Record<"owner" | "vet" | "admin", number>;
 
 // Regular enum -- exists at runtime, supports reverse mapping
 // ===== ENUMS (Vite-Safe & String-Based) =====
@@ -66,9 +66,9 @@ export type AppointmentStatus = typeof AppointmentStatus[keyof typeof Appointmen
 
 // const enum -- inlined at compile time, zero runtime overhead
 export const enum Role {
+    Owner = "owner",
     Vet = "vet",
     Admin = "admin",
-    Receptionist = "receptionist",
 }
 
 // ===== API TYPES (DTOs) =====
