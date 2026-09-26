@@ -24,10 +24,12 @@ export const appointmentSchema = z.object({
         .string({ message: "Please select an appointment type." })
         .min(1, "Appointment type is required."),
     notes: z
-        .string()
+        .string({ message: "Appointment notes are required." })
+        .min(3, "Appointment notes must be at least 3 characters long.")
         .max(200, "Appointment notes cannot exceed 200 characters.")
-        .optional()
-        .or(z.literal("")),
+        .refine((val) => val.trim().length >= 3, {
+            message: "Notes cannot consist of whitespace only.",
+        }),
     status: z.enum(
         [
             AppointmentStatus.Scheduled,

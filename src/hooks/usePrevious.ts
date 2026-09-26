@@ -1,14 +1,15 @@
-import { useRef, useEffect } from "react";
+import { useState } from "react";
 
-// Generic T -- works for any state type
+// Safe, Concurrent-mode and React 19 compliant previous value tracker
 function usePrevious<T>(value: T): T | undefined {
-    const ref = useRef<T | undefined>(undefined);
+    const [tuple, setTuple] = useState<[T, T | undefined]>([value, undefined]);
 
-    useEffect(() => {
-        ref.current = value;
-    }, [value]);
+    if (tuple[0] !== value) {
+        setTuple([value, tuple[0]]);
+        return tuple[0];
+    }
 
-    return ref.current;
+    return tuple[1];
 }
 
 export default usePrevious;
