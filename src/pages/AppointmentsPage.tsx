@@ -283,7 +283,7 @@ function AppointmentsPage() {
 
                         <div className="grid gap-1.5">
                             <Label htmlFor="notes">
-                                Notes <span className="text-xs text-muted-foreground font-normal">(Optional)</span>
+                                Notes <span className="text-xs text-muted-foreground font-normal">(min. 3 characters)</span>
                             </Label>
                             <Input
                                 id="notes"
