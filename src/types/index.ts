@@ -5,27 +5,27 @@ export type ID = number | string;
 // ===== INTERFACES =====
 // Entity 1: User (with role field for Module 3 auth)
 export interface User {
-    id: number;
+    id: ID;
     name: string;
     email: string;
-    role: "owner" | "vet" | "admin";
-    isActive: boolean;
+    role: "owner" | "vet" | "admin" | "student" | "instructor";
+    isActive?: boolean;
 }
 
 // Entity 2: Pet (List-then-detail relationship with User via ownerId)
 export interface Pet {
-    id: number;
+    id: ID;
     name: string;
     species: string;
     breed: string;
-    ownerId: number; 
+    ownerId: ID; 
 }
 
 // Entity 3: Appointment (Multi-step status lifecycle via enum)
 export interface Appointment {
-    id: number;
-    petId: number;
-    vetId: number;
+    id: ID;
+    petId: ID;
+    vetId: ID;
     scheduledAt: Date;
     type?: string; // appointment service type e.g. "Routine Checkup", "Vaccination", etc.
     notes?: string; // optional notes field
@@ -72,8 +72,6 @@ export const enum Role {
 }
 
 // ===== API TYPES (DTOs) =====
-// JSON has no Date and json-server uses string IDs.
-// Both types below are DERIVED from existing models using Omit.
 export type ApiAppointment = Omit<Appointment, "id" | "scheduledAt"> & {
     id: string;
     scheduledAt: string; // ISO string over the wire
