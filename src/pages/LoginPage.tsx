@@ -11,8 +11,8 @@ function LoginPage() {
     
     // Form fields
     const [name, setName] = useState<string>("");
-    const [email, setEmail] = useState<string>("juan.owner@example.com");
-    const [password, setPassword] = useState<string>("password123");
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
     
     // UI state
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -55,13 +55,6 @@ function LoginPage() {
         } finally {
             setIsLoading(false);
         }
-    };
-
-    const handleQuickFill = (demoName: string, demoEmail: string) => {
-        setName(demoName);
-        setEmail(demoEmail);
-        setPassword("password123");
-        setErrorMsg(null);
     };
 
     return (
@@ -120,31 +113,6 @@ function LoginPage() {
                     {successMsg}
                 </div>
             )}
-
-            {/* Quick Fill presets for GT4 Testing */}
-            <div className="space-y-2">
-                <Label className="text-xs font-semibold text-muted-foreground uppercase">
-                    Demo Accounts (Auto-Fill):
-                </Label>
-                <div className="grid grid-cols-2 gap-2">
-                    <button
-                        type="button"
-                        onClick={() => handleQuickFill("Juan Dela Cruz", "juan.owner@example.com")}
-                        className="p-2 text-left border rounded-lg text-xs hover:bg-muted transition-colors border-border"
-                    >
-                        <p className="font-bold text-foreground">Juan Dela Cruz</p>
-                        <p className="text-muted-foreground text-[10px]">Owner</p>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handleQuickFill("Dr. Maria Santos", "maria.vet@example.com")}
-                        className="p-2 text-left border rounded-lg text-xs hover:bg-muted transition-colors border-border"
-                    >
-                        <p className="font-bold text-foreground">Dr. Maria Santos</p>
-                        <p className="text-muted-foreground text-[10px]">Staff Vet</p>
-                    </button>
-                </div>
-            </div>
 
             <form onSubmit={handleSubmit} className="space-y-4 pt-2">
                 {authMode === "register" && (
