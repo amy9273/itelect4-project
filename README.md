@@ -2,6 +2,13 @@
 
 A veterinary clinic management web application built with **React**, **TypeScript**, **Vite**, **TailwindCSS**, **TanStack Query**, **Zustand**, **React Hook Form**, **Zod**, and **Shadcn UI**.
 
+## 🚀 Live Deployments
+
+- **Live Frontend App**: [https://itelect4-project-red.vercel.app/](https://itelect4-project-red.vercel.app/)
+- **Live Backend API**: [https://itelect4-backend-rho.vercel.app/](https://itelect4-backend-rho.vercel.app/)
+  - Health Check: [https://itelect4-backend-rho.vercel.app/api/health](https://itelect4-backend-rho.vercel.app/api/health)
+- **Backend Repository**: [https://github.com/amy9273/itelect4-backend](https://github.com/amy9273/itelect4-backend)
+
 ---
 
 ## 🚀 Module 3 / Graded Task 3 (GT3) Completed Features
