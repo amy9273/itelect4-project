@@ -38,6 +38,9 @@ function Layout() {
                         <NavLink to="/appointments" className={linkClass}>
                             {userRole === "vet" ? "Doctor Appointments" : "Appointments"}
                         </NavLink>
+                        <NavLink to="/review" className={linkClass}>
+                            AI Review
+                        </NavLink>
                     </div>
 
                     <div className="ml-auto flex items-center gap-4">
