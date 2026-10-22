@@ -1,4 +1,4 @@
-import type { ApiVet, ApiPet, ApiAppointment, NewAppointment, NewPet, User } from "../types/index";
+import type { ApiVet, ApiPet, ApiAppointment, NewAppointment, NewPet, User, AiReview } from "../types/index";
 
 // Read API URL from Vite env or fallback to local backend API
 const rawApiUrl = (import.meta.env.VITE_API_URL as string) || "http://localhost:4000/api";
@@ -160,5 +160,16 @@ export async function registerApi(
     return apiRequest<User>("/auth/register", {
         method: "POST",
         body: JSON.stringify({ name, email, password }),
+    });
+}
+
+// ===== SESSION 11: one more private call ===============================
+// ---- ai: private, like appointments. The token goes on automatically,
+// which matters more here than anywhere: without it, anyone could
+// spend your Gemini quota.
+export async function askAi(prompt: string): Promise<AiReview> {
+    return apiRequest<AiReview>("/ai", {
+        method: "POST",
+        body: JSON.stringify({ prompt }),
     });
 }

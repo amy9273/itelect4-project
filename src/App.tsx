@@ -8,6 +8,7 @@ import PetsPage from "./pages/PetsPage";
 import PetDetailPage from "./pages/PetDetailPage";
 import LoginPage from "./pages/LoginPage";
 import AppointmentsPage from "./pages/AppointmentsPage";
+import ReviewPage from "./pages/ReviewPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
                     <Route path="pets" element={<PetsPage />} />
                     <Route path="pets/:id" element={<PetDetailPage />} />
                     <Route path="appointments" element={<AppointmentsPage />} />
+                    <Route path="review" element={<ReviewPage />} />
                 </Route>
                 <Route path="*" element={<NotFoundPage />} />
             </Route>
