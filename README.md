@@ -1,5 +1,7 @@
 # ITELECT4 Veterinary Clinic Management System
 
+[![CI](https://github.com/amy9273/itelect4-project/actions/workflows/ci.yml/badge.svg)](https://github.com/amy9273/itelect4-project/actions/workflows/ci.yml)
+
 A veterinary clinic management web application built with **React**, **TypeScript**, **Vite**, **TailwindCSS**, **TanStack Query**, **Zustand**, **React Hook Form**, **Zod**, and **Shadcn UI**.
 
 ## 🚀 Live Deployments
@@ -8,6 +10,19 @@ A veterinary clinic management web application built with **React**, **TypeScrip
 - **Live Backend API**: [https://itelect4-backend-rho.vercel.app/](https://itelect4-backend-rho.vercel.app/)
   - Health Check: [https://itelect4-backend-rho.vercel.app/api/health](https://itelect4-backend-rho.vercel.app/api/health)
 - **Backend Repository**: [https://github.com/amy9273/itelect4-backend](https://github.com/amy9273/itelect4-backend)
+
+## Architecture
+
+```mermaid
+flowchart LR
+  fe["itelect4-project<br/>React + Vite on Vercel"]
+  be["itelect4-backend<br/>Express on Vercel"]
+  db[("MongoDB Atlas")]
+  ai["Gemini API"]
+  fe -- "fetch + Bearer token" --> be
+  be -- "Mongoose" --> db
+  be -- "GEMINI_API_KEY" --> ai
+```
 
 ---
 
