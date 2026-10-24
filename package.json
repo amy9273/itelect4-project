@@ -29,6 +29,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@emnapi/runtime": "^1.11.3",
     "@eslint/js": "^10.0.1",
     "@tanstack/react-query-devtools": "^5.101.4",
     "@testing-library/jest-dom": "^7.0.1",
